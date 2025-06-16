@@ -1,41 +1,26 @@
 import React from 'react';
 
-const FilterBar = ({ selectedLetter, setSelectedLetter, sortOrder, setSortOrder }) => {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
-
+const FilterBar = ({ sortOrder, setSortOrder }) => {
   return (
-    <div className="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4">
-
-      {/* A-Z Filter */}
-      <div className="d-flex flex-wrap justify-content-center gap-2">
-        {letters.map((letter) => (
-          <button
-            key={letter}
-            className={`btn btn-sm ${selectedLetter === letter ? 'btn-dark' : 'btn-outline-secondary'}`}
-            onClick={() => setSelectedLetter(letter)}
-          >
-            {letter}
-          </button>
-        ))}
-        <button
-          className="btn btn-sm btn-warning"
-          onClick={() => setSelectedLetter('')}
-        >
-          Reset
-        </button>
-      </div>
-
-      {/* Sort by Year */}
-      <select
-        className="form-select w-auto"
-        value={sortOrder}
-        onChange={(e) => setSortOrder(e.target.value)}
+    <div className="d-flex flex-wrap justify-content-center my-3 gap-2">
+      <button
+        className={`btn ${sortOrder === 'new' ? 'btn-primary' : 'btn-outline-primary'}`}
+        onClick={() => setSortOrder('new')}
       >
-        <option value="">Sort by Year</option>
-        <option value="new">Newest First</option>
-        <option value="old">Oldest First</option>
-        <option value="medium">2000-2015</option>
-      </select>
+        Newest First
+      </button>
+      <button
+        className={`btn ${sortOrder === 'old' ? 'btn-primary' : 'btn-outline-primary'}`}
+        onClick={() => setSortOrder('old')}
+      >
+        Oldest First
+      </button>
+      <button
+        className={`btn ${sortOrder === 'medium' ? 'btn-primary' : 'btn-outline-primary'}`}
+        onClick={() => setSortOrder('medium')}
+      >
+        2000-2015 Movies
+      </button>
     </div>
   );
 };
