@@ -15,7 +15,7 @@ const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-  const popularKeywords = ["Avengers", "Harry Potter", "Frozen", "Iron Man", "Pirates", "Batman", "Star Wars", "Transformers", "Minions"];
+  const popularKeywords = ["Avengers", "Harry Potter", "Frozen", "Iron Man", "Pirates","Chennai Express", "Dil",  "Batman", "Star Wars", "Transformers", "Minions"];
 
   const fetchMoviesForKeyword = async (keyword) => {
     try {
