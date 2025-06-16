@@ -4,8 +4,7 @@ import './ModalStyles.css';// optional for extra styling
 const MovieDetailsModal = ({ movie, onClose }) => {
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ backgroundColor: 'green
-      ' }}>
+      <div className="modal-content" style={{ backgroundColor: 'green' }}>
         <button className="close-btn" onClick={onClose}>X</button>
         <h2>{movie.Title}</h2>
         <img
