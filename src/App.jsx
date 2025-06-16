@@ -10,12 +10,15 @@ const App = () => {
   const [defaultMovies, setDefaultMovies] = useState([]);
   const [error, setError] = useState('');
   const [liked, setLiked] = useState({});
-  const [selectedLetter, setSelectedLetter] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-  const popularKeywords = ["Avengers", "Harry Potter", "Frozen", "Iron Man", "Pirates","Chennai Express", "Dil",  "Batman", "Star Wars", "Transformers", "Minions"];
+  const popularKeywords = [
+    "Avengers", "Harry Potter", "Frozen", "Iron Man",
+    "Pirates", "Chennai Express", "Dil", "Batman",
+    "Star Wars", "Transformers", "Minions"
+  ];
 
   const fetchMoviesForKeyword = async (keyword) => {
     try {
@@ -41,10 +44,13 @@ const App = () => {
 
   const handleSearch = async () => {
     setError('');
+    setSortOrder('');
+
     if (query.trim() === '') {
       setMovies([]);
       return;
     }
+
     try {
       const response = await fetch(`https://www.omdbapi.com/?apikey=3fa2df22&s=${query}`);
       const data = await response.json();
@@ -71,9 +77,7 @@ const App = () => {
 
   const applyFilters = (movies) => {
     let filtered = [...movies];
-    if (selectedLetter) {
-      filtered = filtered.filter(movie => movie.Title.toLowerCase().startsWith(selectedLetter.toLowerCase()));
-    }
+
     if (sortOrder === "new") {
       filtered = filtered.sort((a, b) => parseInt(b.Year) - parseInt(a.Year));
     } else if (sortOrder === "old") {
@@ -95,7 +99,10 @@ const App = () => {
     <div className={`container-fluid py-4 min-vh-100 ${themeClass}`}>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>🎬 Movie Suggester</h2>
-        <button className="btn btn-outline-secondary" onClick={() => setIsDarkTheme(prev => !prev)}>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => setIsDarkTheme(prev => !prev)}
+        >
           {isDarkTheme ? "🌞 Light Mode" : "🌙 Dark Mode"}
         </button>
       </div>
@@ -103,11 +110,20 @@ const App = () => {
       <SearchBar query={query} setQuery={setQuery} onSearch={handleSearch} />
 
       <FilterBar
-        selectedLetter={selectedLetter}
-        setSelectedLetter={setSelectedLetter}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
+
+      <div className="text-center mb-4">
+        <button
+          className="btn btn-warning"
+          onClick={() => {
+            setSortOrder('');
+          }}
+        >
+          Reset Filters
+        </button>
+      </div>
 
       {error && <div className="alert alert-danger text-center">{error}</div>}
 
