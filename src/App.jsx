@@ -15,7 +15,7 @@ const App = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   const popularKeywords = [
-    "Avengers", "Harry Potter", "Frozen", "Iron Man",
+    "Raaz Reboot","1920 London", "Avengers", "Harry Potter", "Frozen", "Iron Man",
     "Pirates", "Chennai Express", "Dil", "Batman",
     "Star Wars", "Transformers", "Minions"
   ];
