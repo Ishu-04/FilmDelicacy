@@ -3,6 +3,7 @@ import SearchBar from './components/SearchBar';
 import MovieList from './components/MovieList';
 import FilterBar from './components/FilterBar';
 import MovieDetailsModal from './components/MovieDetailsModal';
+import GenreFilter from './components/GenreFilter';
 
 const App = () => {
   const [query, setQuery] = useState('');
@@ -13,12 +14,19 @@ const App = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState('');
 
   const popularKeywords = [
-    "Raaz Reboot","1920 London", "Avengers", "Harry Potter", "Frozen", "Iron Man",
+    "Raaz Reboot", "1920 London", "Avengers", "Harry Potter", "Frozen", "Iron Man",
     "Pirates", "Chennai Express", "Dil", "Batman",
     "Star Wars", "Transformers", "Minions"
   ];
+
+  const fetchMovieDetails = async (id) => {
+    const res = await fetch(`https://www.omdbapi.com/?apikey=3fa2df22&i=${id}`);
+    const data = await res.json();
+    return data.Response === "True" ? data : null;
+  };
 
   const fetchMoviesForKeyword = async (keyword) => {
     try {
@@ -35,7 +43,10 @@ const App = () => {
       let allMovies = [];
       for (const keyword of popularKeywords) {
         const moviesForKeyword = await fetchMoviesForKeyword(keyword);
-        allMovies = [...allMovies, ...(moviesForKeyword || [])];
+        const detailedMovies = await Promise.all(
+          moviesForKeyword.map(movie => fetchMovieDetails(movie.imdbID))
+        );
+        allMovies = [...allMovies, ...detailedMovies.filter(Boolean)];
       }
       setDefaultMovies(allMovies);
     };
@@ -45,6 +56,7 @@ const App = () => {
   const handleSearch = async () => {
     setError('');
     setSortOrder('');
+    setSelectedGenre('');
 
     if (query.trim() === '') {
       setMovies([]);
@@ -55,7 +67,10 @@ const App = () => {
       const response = await fetch(`https://www.omdbapi.com/?apikey=3fa2df22&s=${query}`);
       const data = await response.json();
       if (data.Response === "True") {
-        setMovies(data.Search);
+        const detailedMovies = await Promise.all(
+          data.Search.map(movie => fetchMovieDetails(movie.imdbID))
+        );
+        setMovies(detailedMovies.filter(Boolean));
       } else {
         setMovies([]);
         setError("No movies found.");
@@ -75,8 +90,24 @@ const App = () => {
     setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const displayMovies = query.trim() === '' ? defaultMovies : movies;
+
+  const allGenres = Array.from(
+    new Set(
+      displayMovies.flatMap(movie =>
+        movie?.Genre?.split(',').map(g => g.trim()) || []
+      )
+    )
+  );
+
   const applyFilters = (movies) => {
     let filtered = [...movies];
+
+    if (selectedGenre) {
+      filtered = filtered.filter(movie =>
+        movie?.Genre?.toLowerCase().includes(selectedGenre.toLowerCase())
+      );
+    }
 
     if (sortOrder === "new") {
       filtered = filtered.sort((a, b) => parseInt(b.Year) - parseInt(a.Year));
@@ -88,10 +119,10 @@ const App = () => {
         return year >= 2000 && year <= 2015;
       });
     }
+
     return filtered;
   };
 
-  const displayMovies = query.trim() === '' ? defaultMovies : movies;
   const filteredMovies = applyFilters(displayMovies);
   const themeClass = isDarkTheme ? 'bg-dark text-light' : 'bg-light text-dark';
 
@@ -114,11 +145,18 @@ const App = () => {
         setSortOrder={setSortOrder}
       />
 
+      <GenreFilter
+        genres={allGenres}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+      />
+
       <div className="text-center mb-4">
         <button
           className="btn btn-warning"
           onClick={() => {
             setSortOrder('');
+            setSelectedGenre('');
           }}
         >
           Reset Filters
